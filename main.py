@@ -16,6 +16,7 @@ from matplotlib import pyplot as plt
 from keras.callbacks import ModelCheckpoint
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+np.random.seed(10)
 
 archive = "./images/"
 data_dir = pathlib.Path(archive).with_suffix('')
@@ -77,12 +78,13 @@ class EyeImageGen(tf.keras.utils.Sequence):
     def __len__(self):
         return int(len(self.x)/self.batch_size)
     
-filepath = './Models/model.epoch{epoch:02d}-accuracy{val_accuracy:.2f}.hdf5'
+ilepath = './Models/Resnet50Exp0.epoch{epoch:02d}-val_accuracy{val_accuracy:.2f}-training_accuracy{accuracy:.2f}-val_loss{val_loss:.2f}-training_loss{loss:.2f}.hdf5'
 checkpoint = ModelCheckpoint(filepath=filepath, 
                              monitor='val_accuracy', 
                              verbose=1, 
-                             save_best_only=True, 
-                             mode='max')
+                             save_weights_only=True, 
+                             mode='max',
+                             save_freq='epoch')
 
 model = tf.keras.applications.ResNet50(
     include_top=True,
@@ -108,16 +110,16 @@ model.fit(
 )
 
 
-model = keras.models.load_model('./models/model.epoch01-accuracy0.75.hdf5')
-for i, path in enumerate(test):
-    im = Image.open(path).convert("RGB")
-    test[i] = np.asarray(im)
-test = np.asarray(test)
+#model = keras.models.load_model('./models/model.epoch01-accuracy0.75.hdf5')
+#for i, path in enumerate(test):
+#    im = Image.open(path).convert("RGB")
+#    test[i] = np.asarray(im)
+#test = np.asarray(test)
 
-pred = np.rint(model.predict(test))
-conf_matrix = confusion_matrix(test_ohe.argmax(axis=1), pred.argmax(axis=1))
-disp = ConfusionMatrixDisplay(conf_matrix, display_labels=['mild', 'moderate', 'none', 'proliferate', 'servere',])
-disp.plot()
-plt.savefig('./results/resnet50.png')
+#pred = np.rint(model.predict(test))
+#conf_matrix = confusion_matrix(test_ohe.argmax(axis=1), pred.argmax(axis=1))
+#disp = ConfusionMatrixDisplay(conf_matrix, display_labels=['mild', 'moderate', 'none', 'proliferate', 'servere',])
+#disp.plot()
+#plt.savefig('./results/resnet50.png')
 
     
